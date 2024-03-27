@@ -4,37 +4,30 @@
  */
 package tclenguaje;
 
-
 /**
  *
  * @author David
  */
 public class SNoTerminales {
+
     public String simbolo;
     String reglas;
 
     public SNoTerminales() {
-        reglas="";
+        reglas = "";
     }
-    
-      public SNoTerminales(String simbolo,String reglas) {
-          this.simbolo=simbolo;
-        this.reglas=reglas;
+
+    public SNoTerminales(String simbolo, String reglas) {
+        this.simbolo = simbolo;
+        this.reglas = reglas;
     }
 
     public String getSimbolo() {
         return simbolo;
     }
 
-    public void setSimbolo(String simbolo) {
-        this.simbolo = simbolo;
-    }
-
     public String getReglas() {
         return reglas;
     }
-    
-    
-    
-    
+
 }
