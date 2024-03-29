@@ -2,7 +2,6 @@ package tclenguaje;
 
 import Util.seed.ListaCD;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class TCLenguaje {
@@ -12,53 +11,77 @@ public class TCLenguaje {
     SNoTerminales sInicial;
 
     public TCLenguaje() {
-        sInicial = new SNoTerminales();
+        sInicial = null;
     }
 
-    public void agregarNoTerminal(String simbolo, String reglas) throws RuntimeException {
+    public String agregarNoTerminal(String simbolo, String reglas) throws RuntimeException {
         if (simbolo.isEmpty()) {
             throw new RuntimeException("debe definir el simbolo no terminal");
         }
         if (reglas.isEmpty()) {
             throw new RuntimeException("debe definir las reglas de producción");
         }
+        for (SNoTerminales s : SNT) {
+            if (s.getSimbolo().equals(simbolo)) {
+                throw new RuntimeException("El símbolo no terminal ya existe");
+            }
+        }
         SNoTerminales s = new SNoTerminales(simbolo, reglas);
+        String noterminal = s.toString();
         SNT.insertarFinal(s);
+        return noterminal;
     }
 
     public void agregarTerminales(String simbolo) {
+        for (String s : ST) {
+            if (s.equals(simbolo)) {
+                throw new RuntimeException("El símbol terminal ya existe");
+            }
+        }
         ST.insertarFinal(simbolo);
     }
 
     public void simboloInicial(String simbolo) throws RuntimeException {
+        boolean existe = false;
         for (SNoTerminales s : SNT) {
             if (s.getSimbolo().equals(simbolo)) {
                 this.sInicial = s;
-            } else {
-                throw new RuntimeException("El simbolo no terminal no existe");
+                existe = true;
             }
-
+        }
+        if (existe == false) {
+            throw new RuntimeException("El simbolo no terminal no existe");
         }
     }
 
-    public String generarPalabras() {
+    public String generarPalabras() throws RuntimeException {
+        if (sInicial == null) {
+            throw new RuntimeException("debe definir un símbolo inicial");
+        }
+        int contador = 0;
         String palabras = "";
-        List<String> palabrasGeneradas = generarPalabrasAux(sInicial.getSimbolo(), new ArrayList<>());
+        List<String> palabrasGeneradas = generarPalabrasAux(sInicial.getSimbolo(), new ArrayList<>(), contador);
+        System.out.println(palabrasGeneradas.size());
         for (String palabra : palabrasGeneradas) {
-            palabras += palabra + ", ";
+            palabras += palabra + ",  ";
         }
         return palabras + "...";
     }
 
-    private List<String> generarPalabrasAux(String simbolo, List<String> simbolosProcesados) {
+    private List<String> generarPalabrasAux(String simbolo, List<String> simbolosProcesados, int contador) {
+
         List<String> palabras = new ArrayList<>();
-        // Verificar si el símbolo ya ha sido procesado para evitar la recursión infinita
-        int procesadoCount = Collections.frequency(simbolosProcesados, simbolo);
-        if (procesadoCount >= 1) {
+
+        if (simbolosProcesados.contains(sInicial.getSimbolo())) {
+            contador++;
+        }
+        if (contador >= 3) {
             return palabras;
         }
         // Agregar el símbolo actual a la lista de símbolos procesados
         simbolosProcesados.add(simbolo);
+        // Verificar si el límite de palabras generadas ha sido alcanzado
+
         // Verificar si el símbolo es terminal
         if (ST.containTo(simbolo)) {
             palabras.add(simbolo);
@@ -86,7 +109,7 @@ public class TCLenguaje {
                                 nuevasPalabras.add(palabraParcial + parte);
                             } else {
                                 // Si es no terminal, generamos palabras recursivamente
-                                List<String> palabrasGeneradasParaParte = generarPalabrasAux(parte, new ArrayList<>(simbolosProcesados));
+                                List<String> palabrasGeneradasParaParte = generarPalabrasAux(parte, new ArrayList<>(simbolosProcesados), contador);
                                 for (String palabraGenerada : palabrasGeneradasParaParte) {
                                     nuevasPalabras.add(palabraParcial + palabraGenerada);
                                 }
@@ -97,33 +120,38 @@ public class TCLenguaje {
 
                     // Agregar todas las palabras generadas para esta regla a la lista principal de palabras
                     palabras.addAll(palabrasRegla);
+                    // Verificar si se alcanzó el límite de palabras generadas
+
                 }
                 break;
             }
         }
         return palabras;
     }
-
+//
 //    public static void main(String[] args) {
 //        // Crear una instancia de la clase TCLenguaje
 //        TCLenguaje gramatica = new TCLenguaje();
 //
 //        // Definir símbolos no terminales y reglas
-//        gramatica.agregarNoTerminal("B", "C D | 1 E | D 1");
-//        gramatica.agregarNoTerminal("C", "D E 2 | 2");
-//        gramatica.agregarNoTerminal("D", "C 1 C 2 | s");
-//        gramatica.agregarNoTerminal("E", "B C | C D 1");
+//        gramatica.agregarNoTerminal("B", "H 1 C | D E 2 3 | C 2 1 | 1");
+//        gramatica.agregarNoTerminal("C", "D H 1 | H | D 1 2 | 2");
+//        gramatica.agregarNoTerminal("D", "C 1 C 2 | 2");
+//        gramatica.agregarNoTerminal("E", "1 2 C | C D 1 | 1");
+//        gramatica.agregarNoTerminal("F", "C 1 2 | D H 3 4");
+//        gramatica.agregarNoTerminal("H","C 2");
 //
 ////         Definir símbolos terminales
 //        gramatica.agregarTerminales("1");
 //        gramatica.agregarTerminales("2");
-//        gramatica.agregarTerminales("s");
+//        gramatica.agregarTerminales("3");
+//        gramatica.agregarTerminales("4");
 //
 //        // Definir símbolo inicial
 //        gramatica.simboloInicial("B");
 //
 //        // Generar palabras y mostrarlas en la consola
 //        System.out.println(gramatica.generarPalabras());
+//
 //    }
-
 }

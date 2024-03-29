@@ -30,4 +30,9 @@ public class SNoTerminales {
         return reglas;
     }
 
+    @Override // agreagr en el pdf
+    public String toString() {
+        return simbolo + "=> " + reglas + " ";
+    }
+
 }
