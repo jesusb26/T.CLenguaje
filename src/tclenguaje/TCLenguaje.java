@@ -2,7 +2,9 @@ package tclenguaje;
 
 import Util.seed.ListaCD;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class TCLenguaje {
 
@@ -56,13 +58,17 @@ public class TCLenguaje {
 
     public String generarPalabras() throws RuntimeException {
         if (sInicial == null) {
-            throw new RuntimeException("debe definir un símbolo inicial");
+            throw new RuntimeException("Debe definir un símbolo inicial");
         }
         int contador = 0;
         String palabras = "";
+        Set<String> palabrasGeneradasSet = new HashSet<>(); // Usar un Set para evitar palabras duplicadas
         List<String> palabrasGeneradas = generarPalabrasAux(sInicial.getSimbolo(), new ArrayList<>(), contador);
         System.out.println(palabrasGeneradas.size());
         for (String palabra : palabrasGeneradas) {
+            palabrasGeneradasSet.add(palabra); // Agregar palabras al conjunto
+        }
+        for (String palabra : palabrasGeneradasSet) { // Iterar sobre el conjunto para generar la cadena final
             palabras += palabra + ",  ";
         }
         return palabras + "...";
@@ -128,7 +134,7 @@ public class TCLenguaje {
         }
         return palabras;
     }
-//
+
 //    public static void main(String[] args) {
 //        // Crear una instancia de la clase TCLenguaje
 //        TCLenguaje gramatica = new TCLenguaje();
